@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Badminton Tournament</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="badmintontournament.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+      .section {
+          margin-bottom: 40px;
+          padding: 20px;
+          border-radius: 10px;
+          background: rgba(255,255,255,0);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(255,255,255,0.3);
+      }
+    input, select, button {
+      padding: 8px;
+      margin: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+      input::placeholder,
+      textarea::placeholder {
+          color: black;
+          opacity: 0.6;
+      }
+    }
+  </style>
+</head>
+<body>
+    <h1>Manage Badminton Tournament</h1>
+
+    <div class="section">
+        <h2>Update Point Table</h2>
+        <select id="teamSelect"></select>
+        <input type="number" id="matchesPlayed" placeholder="Matches Played">
+        <input type="number" id="wins" placeholder="Wins">
+        <input type="number" id="losses" placeholder="Losses">
+        <button onclick="updatePoints()">Update Points</button>
+        <button onclick="showDeleteTeamPopup()">Delete Selected Team</button>
+        <table>
+            <thead>
+                <tr><th>Team</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+            </thead>
+            <tbody id="pointTableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Add Fixture</h2>
+        <select id="team1"></select> vs <select id="team2"></select><br>
+        <input type="date" id="matchDate">
+        <input type="time" id="matchTime">
+        <input type="text" id="venue" placeholder="Venue">
+        <button onclick="addFixture()">Add Match</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Match</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Venue</th>
+                    <th>Action</th> <!-- New Column -->
+                </tr>
+            </thead>
+            <tbody id="fixturesTableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="deletePopup" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 1001;">
+        <p id="deleteMessage"></p>
+        <button onclick="confirmDeleteTeam()">Yes</button>
+        <button onclick="closeDeletePopup()">No</button>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button onclick="showClearAllPopup()">🧹 Clear All Teams</button>
+    </div>
+
+    <!-- Clear All Confirmation Popup -->
+    <div id="clearAllPopup" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: gray; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 1002;">
+        <h3>Admin Verification</h3>
+        <input id="adminUsername" placeholder="Username"><br><br>
+        <input id="adminPassword" placeholder="Password" type="password"><br><br>
+        <button onclick="confirmClearAll()">Confirm</button>
+        <button onclick="closeClearAllPopup()">Cancel</button>
+    </div>
+    <div style="margin-top: 10px;">
+        <button onclick="clearAllFixtures()">🧹 Clear All Fixtures</button>
+    </div>
+
+    <!-- Clear All Fixtures Confirmation Popup -->
+    <div id="clearFixturesPopup" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: gray; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 1003;">
+        <h3>Admin Verification</h3>
+        <input id="adminUsername" placeholder="Username"><br><br>
+        <input id="adminPassword" placeholder="Password" type="password"><br><br>
+        <button onclick="confirmClearFixtures()">Confirm</button>
+        <button onclick="closeClearAllFixturesPopup()">Cancel</button>
+    </div>
+    <div class="cyde-mark">CYDE</div>
+
+
+
+    <script>
+        let teamToDelete = null;
+
+        const ADMIN_USER = "1";
+        const ADMIN_PASS = "1";
+
+        function showClearAllPopup() {
+            document.getElementById('clearAllPopup').style.display = 'block';
+        }
+
+        function showDeleteTeamPopup() {
+            const teamSelect = document.getElementById("teamSelect");
+            const selectedTeam = teamSelect.value;
+            if (!selectedTeam) {
+                alert("Please select a team to delete.");
+                return;
+            }
+            deleteTeam(selectedTeam);
+            populateTeamDropdowns?.();
+        }
+
+        function closeClearAllPopup() {
+            document.getElementById('clearAllPopup').style.display = 'none';
+            document.getElementById('adminUsername').value = "";
+            document.getElementById('adminPassword').value = "";
+        }
+
+        function confirmClearAll() {
+            const user = document.getElementById('adminUsername').value.trim();
+            const pass = document.getElementById('adminPassword').value.trim();
+
+            if (user === ADMIN_USER && pass === ADMIN_PASS) {
+                localStorage.removeItem("badminton-teams");
+                localStorage.removeItem("badminton-points");
+                renderTeams();
+                populateTeamDropdowns?.(); // if the function exists
+                alert("All teams and points cleared.");
+                closeClearAllPopup();
+                populateTeamDropdowns?.();
+            } else {
+                alert("Invalid credentials!");
+            }
+        }
+
+
+        //function renderTeams() {
+        //    const points = JSON.parse(localStorage.getItem("badminton-points") || "[]");
+        //    const tableBody = document.getElementById("pointTableBody");
+        //    tableBody.innerHTML = "";
+        //    points.forEach(team => {
+        //        const tr = document.createElement("tr");
+        //        tr.innerHTML = `
+        //      <td>${team.name}</td>
+        //      <td>${team.matches}</td>
+        //      <td>${team.wins}</td>
+        //      <td>${team.losses}</td>
+        //      <td>${team.points}</td>
+        //      <td><button onclick="deleteTeam('${team.name}')">Delete</button></td>
+        //    `;
+        //        tableBody.appendChild(tr);
+        //    });
+        //}
+
+        window.onload = function () {
+            renderTeams();
+            populateTeamDropdowns();
+            renderFixtures();
+        };
+        function deleteTeam(teamName) {
+            teamToDelete = teamName;
+            document.getElementById('deleteMessage').innerText = `Are you sure you want to delete the team "${teamName}"?`;
+            document.getElementById('deletePopup').style.display = 'block';
+        }
+
+        function closeDeletePopup() {
+            document.getElementById('deletePopup').style.display = 'none';
+            teamToDelete = null;
+        }
+
+        function confirmDeleteTeam() {
+            if (!teamToDelete) return;
+
+            let teams = JSON.parse(localStorage.getItem("badminton-teams") || "[]");
+            let points = JSON.parse(localStorage.getItem("badminton-points") || "[]");
+
+            teams = teams.filter(t => t.name !== teamToDelete);
+            points = points.filter(p => p.name !== teamToDelete);
+
+            localStorage.setItem("badminton-teams", JSON.stringify(teams));
+            localStorage.setItem("badminton-points", JSON.stringify(points));
+
+            renderTeams();
+            populateTeamDropdowns();
+            closeDeletePopup();
+        }
+    </script>
+
+</body>
+</html>

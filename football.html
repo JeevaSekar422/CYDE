@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Football – Dhvani Sports Club</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 1600px;
+            margin: auto;
+        }
+
+        .column {
+            width: 48%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .left-column {
+            text-align: left;
+            border-right: 2px solid #ccc;
+        }
+
+        .right-column {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Football Team</h1>
+
+    <div class="container">
+        <!-- Column 1: Player Registration -->
+        <div class="column left-column">
+            <!-- Register Button -->
+            <button class="register-btn" onclick="openModal()">Register Now</button>
+
+            <!-- Modal Form -->
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <form onsubmit="register(event, 'football')">
+                        <label>Name: <input type="text" id="name" required></label>
+                        <label>Employee ID: <input type="text" id="employeeId" required></label>
+                        <label>
+                            Game Type:
+                            <select id="type" required>
+                                <option value="Forward">Forward</option>
+                                <option value="Midfielder">Midfielder</option>
+                                <option value="Defender">Defender</option>
+                                <option value="Goalkeeper">Goalkeeper</option>
+                            </select>
+                        </label>
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+            <h2 align="center">Registered Players</h2>
+            <table id="playerTable">
+                <thead>
+                    <tr><th>Name</th><th>ID</th><th>Type</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <button class="csv-btn" onclick="downloadCSV('football')">Download CSV</button>
+
+            <!-- Tournament Button -->
+            <div style="margin-top: 20px;">
+                <button onclick="window.location.href='football-tournament.html'">🏆 Tournament</button>
+            </div>
+        </div>
+
+        <!-- Column 2: Match Management -->
+        <div class="column right-column">
+            <h2 align="center">Upcoming Matches</h2>
+            <div class="page-section action-buttons">
+                <button onclick="showAddGameForm()">➕ Add Match</button>
+            </div>
+
+            <div id="addGameForm" class="page-section credentials-form" style="display:none;">
+                <h3>Admin Login</h3>
+                <input id="adminUser" placeholder="Username">
+                <input id="adminPass" type="password" placeholder="Password">
+                <input id="gameDate" type="date" placeholder="Game Date">
+                <input id="gameTime" placeholder="Game Time (e.g. 5:00 PM)">
+                <input id="gameVenue" placeholder="Venue (e.g. Main Ground)">
+                <button onclick="addGame('football')">Add Match</button>
+            </div>
+
+            <div class="page-section">
+                <h3 align="center">Scheduled Matches</h3>
+                <ul id="editableGameList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function promptCredentials(callback) {
+            const username = prompt("Enter username:");
+            const password = prompt("Enter password:");
+            const admins = JSON.parse(localStorage.getItem("game-admins") || "[]");
+            const valid = admins.some(a => a.username === username && a.password === password);
+            if (!valid) return alert("Invalid credentials");
+            callback();
+        }
+
+        function loadEditableGames(game) {
+            const list = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            const ul = document.getElementById('editableGameList');
+            ul.innerHTML = '';
+            list.forEach((g, index) => {
+                const joined = JSON.parse(localStorage.getItem(`${game}-players-${g.date}`) || '[]');
+                const joinedText = joined.length ? '<br><strong>Joined:</strong> ' + joined.join(', ') : '';
+                const li = document.createElement('li');
+                li.innerHTML = `
+              <span><strong>Date:</strong> ${g.date}, <strong>Time:</strong> ${g.time || 'N/A'}, <strong>Venue:</strong> ${g.venue || 'N/A'}</span><br>
+              <button onclick="promptCredentials(() => deleteGame('${game}', ${index}))">Delete</button>
+              <button onclick="promptCredentials(() => editGame('${game}', ${index}))">Edit</button>
+              <button onclick="joinSpecificGame('${game}', '${g.date}')">Join</button>
+              ${joinedText}
+            `;
+                ul.appendChild(li);
+            });
+        }
+
+        function deleteGame(game, index) {
+            const games = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            games.splice(index, 1);
+            localStorage.setItem(`${game}-today`, JSON.stringify(games));
+            loadEditableGames(game);
+        }
+
+        function editGame(game, index) {
+            const games = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            const g = games[index];
+            const date = prompt("Edit Date:", g.date);
+            const time = prompt("Edit Time:", g.time || '');
+            const venue = prompt("Edit Venue:", g.venue || '');
+            if (date) {
+                games[index] = { date, time, venue };
+                localStorage.setItem(`${game}-today`, JSON.stringify(games));
+                loadEditableGames(game);
+            }
+        }
+
+        function joinSpecificGame(game, date) {
+            const name = prompt("Enter your name to join:");
+            if (!name) return;
+            const key = `${game}-players-${date}`;
+            const list = JSON.parse(localStorage.getItem(key) || '[]');
+            if (!list.includes(name)) list.push(name);
+            localStorage.setItem(key, JSON.stringify(list));
+            loadEditableGames(game);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEditableGames('football');
+            loadData('football');
+        });
+    </script>
+</body>
+</html>

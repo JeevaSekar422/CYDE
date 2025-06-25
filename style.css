@@ -1,0 +1,354 @@
+/* Full-page background image */
+body {
+    background: url("background-sports.jpg") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+    /* Overlay for better readability */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5); /* semi-transparent overlay */
+        z-index: -1;
+    }
+
+/* Heading */
+h1 {
+    margin: 30px 0;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px #000;
+}
+
+/* Navigation (index page) */
+.games a {
+    display: inline-block;
+    margin: 10px;
+    padding: 15px 25px;
+    background: #ef476f;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: background .3s, transform .3s;
+}
+
+    .games a:hover {
+        background: #d6456c;
+        transform: translateY(-3px);
+    }
+
+/* Banner image per game */
+.banner {
+    width: 90%;
+    max-width: 800px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* Form box */
+form {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    width: 90%;
+    max-width: 500px;
+    backdrop-filter: blur(5px);
+}
+
+    form label {
+        display: block;
+        margin: 10px 0;
+        font-size: 1.1rem;
+        color: #fff;
+    }
+
+    form input, form select {
+        padding: 8px;
+        width: 100%;
+        border: none;
+        border-radius: 4px;
+        margin-top: 5px;
+        font-size: 1rem;
+    }
+
+    form button {
+        margin-top: 15px;
+        padding: 12px 20px;
+        background: #ffd166;
+        border: none;
+        border-radius: 6px;
+        color: #333;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background .3s;
+    }
+
+        form button:hover {
+            background: #e5b65b;
+        }
+
+/* Table styling */
+table {
+    width: 90%;
+    max-width: 700px;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    color: white;
+}
+
+th {
+    background: rgba(0,0,0,0.3);
+    font-size: 1.1rem;
+}
+
+tbody tr:nth-child(odd) {
+    background: rgba(255,255,255,0.05);
+}
+
+tbody tr:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+/* CSV button */
+button.csv-btn {
+    padding: 10px 18px;
+    background: #06d6a0;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background .3s;
+}
+
+    button.csv-btn:hover {
+        background: #05b884;
+    }
+
+/* Register button */
+.register-btn {
+    background: #ff7f50;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background 0.3s;
+}
+
+    .register-btn:hover {
+        background: #ff6333;
+    }
+
+/* Modal background */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+}
+
+/* Modal content box */
+.modal-content {
+    background-color: #222;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+/* Close button */
+.close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 28px;
+    cursor: pointer;
+    color: white;
+}
+button {
+    padding: 6px 10px;
+    background: #ef476f;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+    button:hover {
+        background: #d43a60;
+    }
+
+input {
+    width: 100%;
+    padding: 5px;
+    border-radius: 4px;
+    border: none;
+}
+
+/* Tournament and Today's Game Enhanced Styling */
+
+/* Page containers */
+.page-section {
+    width: 90%;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+    .page-section h2 {
+        text-align: center;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        color: #ffe066;
+        text-shadow: 1px 1px 3px #000;
+    }
+
+    .page-section ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .page-section li {
+        background: rgba(255, 255, 255, 0.1);
+        margin: 8px 0;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-weight: bold;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .page-section li:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+/* Credentials Form */
+.credentials-form input {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    border-radius: 6px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
+}
+
+.credentials-form button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    font-size: 1rem;
+    background: #06d6a0;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .credentials-form button:hover {
+        background: #04c491;
+    }
+
+/* Button section */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+    .action-buttons button {
+        width: 80%;
+        max-width: 300px;
+        background: #118ab2;
+        color: white;
+        padding: 12px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+        .action-buttons button:hover {
+            background: #0d6e9e;
+        }
+
+/* Input label spacing */
+label {
+    font-weight: bold;
+    color: #ffe;
+    margin-top: 12px;
+    display: block;
+}
+
+/* Make all input placeholders white */
+input::placeholder {
+    color: #fff;
+    opacity: 1; /* Ensure full visibility */
+}
+
+textarea::placeholder,
+select::placeholder {
+    color: #fff;
+    opacity: 1;
+}
+.cyde-mark {
+    position: fixed;
+    bottom: 10px;
+    right: 15px;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 6px;
+    z-index: 999;
+    user-select: none;
+}

@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Today's Game – Cricket</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <h1>Today's Game – Cricket</h1>
+
+    <div class="page-section action-buttons">
+        <button onclick="showAddGameForm()">➕ Add Game</button>
+    </div>
+
+    <div id="addGameForm" class="page-section credentials-form" style="display:none;">
+        <h2>Admin Login</h2>
+        <input id="adminUser" placeholder="Username">
+        <input id="adminPass" type="password" placeholder="Password">
+        <input id="gameDate" type="date" placeholder="Game Date">
+        <input id="gameTime" placeholder="Game Time (e.g. 5:00 PM)">
+        <input id="gameVenue" placeholder="Venue (e.g. Main Ground)">
+        <button onclick="addGame('cricket')">Add Game</button>
+    </div>
+
+    <div class="page-section">
+        <h2>Game List</h2>
+        <ul id="gameList"></ul>
+    </div>
+
+    <div class="page-section">
+        <h2>Edit/Delete Games</h2>
+        <ul id="editableGameList"></ul>
+    </div>
+
+    <script>
+        function loadEditableGames(game) {
+            const list = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            const ul = document.getElementById('editableGameList');
+            ul.innerHTML = '';
+            list.forEach((g, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+              <span>Date: ${g.date}, Time: ${g.time || 'N/A'}, Venue: ${g.venue || 'N/A'}</span>
+              <button onclick="deleteGame('${game}', ${index})">Delete</button>
+              <button onclick="editGame('${game}', ${index})">Edit</button>
+            `;
+                ul.appendChild(li);
+            });
+        }
+
+        function deleteGame(game, index) {
+            const games = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            games.splice(index, 1);
+            localStorage.setItem(`${game}-today`, JSON.stringify(games));
+            loadEditableGames(game);
+            loadTodayGames(game);
+        }
+
+        function editGame(game, index) {
+            const games = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            const g = games[index];
+            const date = prompt("Edit Date:", g.date);
+            const time = prompt("Edit Time:", g.time || '');
+            const venue = prompt("Edit Venue:", g.venue || '');
+            if (date) {
+                games[index] = { date, time, venue };
+                localStorage.setItem(`${game}-today`, JSON.stringify(games));
+                loadEditableGames(game);
+                loadTodayGames(game);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEditableGames('cricket');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manager – Dhvani Sports Club</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <style>
+        .container {
+            width: 90%;
+            margin: 30px auto;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+            .section h2 {
+                margin-top: 0;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .action-btns button {
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Manager Dashboard – Dhvani Sports Club</h1>
+    <div class="container">
+        <div class="section">
+            <h2>Edit Matches</h2>
+            <label>
+                Select Game:
+                <select id="selectGame" onchange="loadManagerGames()">
+                    <option value="cricket">Cricket</option>
+                    <option value="badminton">Badminton</option>
+                    <option value="football">Football</option>
+                    <option value="volleyball">Volleyball</option>
+                </select>
+            </label>
+            <ul id="managerGameList"></ul>
+        </div>
+
+        <div class="section">
+            <h2>Registered Players</h2>
+            <label>
+                Select Game:
+                <select id="playerGame" onchange="loadManagerPlayers()">
+                    <option value="cricket">Cricket</option>
+                    <option value="badminton">Badminton</option>
+                    <option value="football">Football</option>
+                    <option value="volleyball">Volleyball</option>
+                </select>
+            </label>
+            <table>
+                <thead>
+                    <tr><th>Name</th><th>ID</th><th>Type</th><th>Action</th></tr>
+                </thead>
+                <tbody id="playerManagerTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function loadManagerGames() {
+            const game = document.getElementById('selectGame').value;
+            const list = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            const ul = document.getElementById('managerGameList');
+            ul.innerHTML = '';
+            list.forEach((g, i) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+              <strong>${g.date}</strong> – ${g.time || ''}, ${g.venue || ''}, Amount: ₹${g.amount || 'N/A'}
+              <div class="action-btns">
+                <button onclick="editGame('${game}', ${i})">Edit</button>
+                <button onclick="deleteGame('${game}', ${i})">Delete</button>
+              </div>
+            `;
+                ul.appendChild(li);
+            });
+        }
+
+        function loadManagerPlayers() {
+            const game = document.getElementById('playerGame').value;
+            const players = JSON.parse(localStorage.getItem(`${game}-players`) || '[]');
+            const tbody = document.getElementById('playerManagerTable');
+            tbody.innerHTML = '';
+            players.forEach((p, i) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+              <td>${p.name}</td><td>${p.id}</td><td>${p.type}</td>
+              <td><button onclick="removePlayer('${game}', ${i})">Remove</button></td>
+            `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editGame(game, index) {
+            const games = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            const g = games[index];
+            const date = prompt("Edit Date:", g.date);
+            const time = prompt("Edit Time:", g.time || '');
+            const venue = prompt("Edit Venue:", g.venue || '');
+            const amount = prompt("Edit Amount (₹):", g.amount || '');
+            if (date) {
+                games[index] = { ...g, date, time, venue, amount };
+                localStorage.setItem(`${game}-today`, JSON.stringify(games));
+                loadManagerGames();
+            }
+        }
+
+        function deleteGame(game, index) {
+            const games = JSON.parse(localStorage.getItem(`${game}-today`) || '[]');
+            games.splice(index, 1);
+            localStorage.setItem(`${game}-today`, JSON.stringify(games));
+            loadManagerGames();
+        }
+
+        function removePlayer(game, index) {
+            const players = JSON.parse(localStorage.getItem(`${game}-players`) || '[]');
+            players.splice(index, 1);
+            localStorage.setItem(`${game}-players`, JSON.stringify(players));
+            loadManagerPlayers();
+        }
+    </script>
+</body>
+</html>
